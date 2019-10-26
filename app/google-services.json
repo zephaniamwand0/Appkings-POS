@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "582714640239-l4p5clnsoa0ep0h79og5m3lr30dp4rf0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.appkings.co.ke",
+            "certificate_hash": "0df95b8e70d9bbc9e4c0c786267c0fc5b2de04fe"
+          }
+        },
+        {
           "client_id": "582714640239-f25c9nsp4m5g5vgn263htg4cbc09c1v2.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">AppKings POS</string>
+    <string name="link_to_reset_your_password_will_be_sent_to_your_email">Link to reset your password will be sent to your email</string>
+    <string name="please_enter_your_password">Please enter your password</string>
+    <string name="please_enter_your_email">Please enter your email</string>
+    <string name="send_link">Send Link</string>
+    <string name="click_on_the_link_to_reset_your_password">Click on the link to reset your password</string>
 </resources>
