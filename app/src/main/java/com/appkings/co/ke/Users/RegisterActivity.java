@@ -8,16 +8,13 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.appkings.co.ke.MainActivity;
 import com.appkings.co.ke.R;
-import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
@@ -31,7 +28,6 @@ public class RegisterActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +35,6 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         progressDialog = new ProgressDialog(this);
 
@@ -52,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
         textViewSignIn = findViewById(R.id.text_view_sign_in);
 
         //when clicked both button and textView
-        buttonRegister.setOnClickListener(v -> CreateNewAccount());
+        buttonRegister.setOnClickListener(v -> createNewAccount());
         textViewSignIn.setOnClickListener(v -> sendUserToLoginActivity());
     }
 
@@ -69,7 +64,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     //method to register in fireBase
-    private void CreateNewAccount() {
+    private void createNewAccount() {
 
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
@@ -129,23 +124,12 @@ public class RegisterActivity extends AppCompatActivity {
                             Snackbar snackbar = Snackbar
                                     .make(findViewById(android.R.id.content),
                                             "Registration is successful, \r\n" +
-                                                    " Please check your EMAIL and verify your account...",
+                                                    " Please check your EMAIL to verify account...",
                                             Snackbar.LENGTH_LONG);
                             snackbar.show();
 
                             sendEmailVerificationMessage();
                             progressDialog.dismiss();
-
-                            db.collection("Users")
-                                    .add(email)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Toast.makeText(RegisterActivity.this, "Success",
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-
                         } else {
                             String message = Objects.requireNonNull(task.getException()).getMessage();
                             Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),

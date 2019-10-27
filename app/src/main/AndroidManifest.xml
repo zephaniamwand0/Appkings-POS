@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Users.ResetPasswordActivity"></activity>
+        <activity android:name=".Products.AddProductsActivity"/>
+        <activity android:name=".Users.ResetPasswordActivity" />
         <activity android:name=".Users.LoginActivity" />
         <activity android:name=".Users.RegisterActivity" />
         <activity android:name=".MainActivity">

@@ -5,4 +5,16 @@
     <string name="please_enter_your_email">Please enter your email</string>
     <string name="send_link">Send Link</string>
     <string name="click_on_the_link_to_reset_your_password">Click on the link to reset your password</string>
+    <string name="login_to_your_account">Login to your account</string>
+    <string name="login">Login</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="product_name">Product Name</string>
+    <string name="price">Price</string>
+    <string name="add">Add</string>
+    <string name="description">Description</string>
+    <string name="selling_price">Selling Price</string>
+    <string name="buying_price">Buying Price</string>
+    <string name="touch_image_to_choose">Touch image to choose</string>
+    <string name="product_image">Product Image</string>
+    <string name="kes_0_00">kes 0.00</string>
 </resources>

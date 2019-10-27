@@ -4,7 +4,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.appkings.co.ke"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -33,6 +33,8 @@ dependencies {
 
     //Other libraries
     implementation 'com.google.android.material:material:1.2.0-alpha01'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-rc01'
+    implementation 'androidx.cardview:cardview:1.0.0'
 
     //FireBase libraries
     implementation 'com.google.firebase:firebase-perf:19.0.1'
@@ -41,6 +43,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.2.1'
     implementation 'com.google.firebase:firebase-auth:19.1.0'
     implementation 'com.google.firebase:firebase-database:19.2.0'
+    implementation 'com.firebaseui:firebase-ui-database:6.0.2'
     implementation 'com.google.firebase:firebase-firestore:21.2.1'
 }
 
