@@ -10,7 +10,7 @@
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical"
-    android:layout_margin="10dp"
+    android:layout_margin="3dp"
     app:cardBackgroundColor="#F2F2F7"
     app:cardCornerRadius="10dp">
 
