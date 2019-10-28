@@ -14,7 +14,11 @@ public class ProductsModelClass {
 
     }
 
-    public ProductsModelClass(String buyingPrice, String productDescription, String productName, String sellingPrice, String userId) {
+    public ProductsModelClass(String buyingPrice,
+                              String productDescription,
+                              String productName,
+                              String sellingPrice,
+                              String userId) {
         this.buyingPrice = buyingPrice;
         this.productDescription = productDescription;
         this.productName = productName;

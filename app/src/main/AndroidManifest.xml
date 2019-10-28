@@ -4,6 +4,8 @@
     package="com.appkings.co.ke">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Products.AddProductsActivity"/>
+        <activity android:name=".GenerateReceiptActivity"/>
+        <activity android:name=".Cart.CartActivity" />
+        <activity android:name=".Products.ViewProductActivity" />
+        <activity android:name=".Products.AddProductsActivity" />
         <activity android:name=".Users.ResetPasswordActivity" />
         <activity android:name=".Users.LoginActivity" />
         <activity android:name=".Users.RegisterActivity" />

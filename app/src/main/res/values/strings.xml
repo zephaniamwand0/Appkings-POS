@@ -17,4 +17,20 @@
     <string name="touch_image_to_choose">Touch image to choose</string>
     <string name="product_image">Product Image</string>
     <string name="kes_0_00">kes 0.00</string>
+    <string name="add_to_cart">Add to Cart</string>
+    <string name="sell">Sell</string>
+    <string name="adjust_quantity">Adjust Quantity</string>
+    <string name="shopping_cart">Shopping Cart</string>
+    <string name="view_cart">View Cart</string>
+    <string name="total_price">Total Price:</string>
+    <string name="register_now">Register now</string>
+    <string name="registered_please_login">Registered? Please login</string>
+    <string name="register_here">Register Here</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="logo">logo</string>
+    <string name="confirm">Confirm</string>
+    <string name="product_quantity">Product Quantity</string>
+    <string name="ksh">KSH:</string>
+    <string name="empty_cart">Empty cart</string>
+    <string name="checkout_and_generate_receipt">Checkout and Generate receipt</string>
 </resources>

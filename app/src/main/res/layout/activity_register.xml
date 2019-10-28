@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F5F5"
+    android:background="@color/colorBackground"
     android:fillViewport="true"
     tools:context=".Users.RegisterActivity">
 
@@ -75,8 +75,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:backgroundTint="#0F6A9C"
-            android:text="Register now" />
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:text="@string/register_now" />
 
         <TextView
             android:id="@+id/text_view_sign_in"
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            android:text="Registered? Please login"
+            android:text="@string/registered_please_login"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="16sp"

@@ -10,10 +10,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.appkings.co.ke.Cart.CartActivity;
 import com.appkings.co.ke.Products.AddProductsActivity;
 import com.appkings.co.ke.Products.ProductsModelClass;
+import com.appkings.co.ke.Products.ViewProductActivity;
 import com.appkings.co.ke.Users.LoginActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -22,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.util.Objects;
 
@@ -34,11 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton addProductsFab;
     private RecyclerView productsRecyclerView;
 
-    /**
-     * Snackbar snackBar = Snackbar.make(findViewById(android.R.id.content),
-     * "You need to update your profile", Snackbar.LENGTH_LONG);
-     * snackBar.show();
-     */
+    private ImageButton shoppingCartButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,20 +46,22 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if (auth == null) {
             sendUserToLoginActivity();
+        } else {
+
+            mAuth = FirebaseAuth.getInstance();
+            currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+            productsReference = FirebaseDatabase.getInstance().getReference().child("Products");
+
+            shoppingCartButton = findViewById(R.id.shoppingCartButton);
+            shoppingCartButton.setOnClickListener(view -> sendUserToShoppingCart());
+
+            productsRecyclerView = findViewById(R.id.productsRecyclerView);
+            displayAllProductsLayout();
+
+            addProductsFab = findViewById(R.id.fab);
+            addProductsFab.setOnClickListener(view -> sendUserToAddProducts());
+
         }
-
-        mAuth = FirebaseAuth.getInstance();
-        currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        productsReference = FirebaseDatabase.getInstance().getReference().child("Products");
-
-        productsRecyclerView = findViewById(R.id.productsRecyclerView);
-        displayAllProductsLayout();
-
-
-        addProductsFab = findViewById(R.id.fab);
-        addProductsFab.setOnClickListener(view -> sendUserToAddProducts());
-
-
     }
 
     @Override
@@ -90,16 +91,23 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     protected void
                     onBindViewHolder(@NonNull ProductsViewHolder holder,
-                                                    int position,
+                                     int position,
                                      @NonNull ProductsModelClass model) {
 
                         String singleProductName = model.getProductName();
                         String singleProductDescription = model.getProductDescription();
-                        String singleProductPrice = model.getSellingPrice();
+                        String singleProductPrice = "Ksh: " + model.getSellingPrice();
 
                         holder.productName.setText(singleProductName);
                         holder.productDescription.setText(singleProductDescription);
                         holder.productSellingPrice.setText(singleProductPrice);
+
+                        holder.itemView.setOnClickListener(view -> {
+                            final String productId = getRef(position).getKey();
+                            Intent productIntent = new Intent(MainActivity.this, ViewProductActivity.class);
+                            productIntent.putExtra("productId", productId);
+                            startActivity(productIntent);
+                        });
                     }
 
                     @NonNull
@@ -147,5 +155,9 @@ public class MainActivity extends AppCompatActivity {
         Intent loginIntent = new Intent(this, LoginActivity.class);
         finish();
         startActivity(loginIntent);
+    }
+    private void sendUserToShoppingCart() {
+        Intent cartActivityIntent = new Intent(this, CartActivity.class);
+        startActivity(cartActivityIntent);
     }
 }
