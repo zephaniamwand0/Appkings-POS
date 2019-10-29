@@ -37,6 +37,7 @@ public class ViewProductActivity extends AppCompatActivity {
     private FloatingActionButton addToCartButton;
 
     private String productId = "";
+    private String productQuantity = "";
 
     //For FireBase
     String currentUserId;
@@ -52,6 +53,9 @@ public class ViewProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_product);
 
         productId = getIntent().getStringExtra("productId");
+        productQuantity = getIntent().getStringExtra("productQuantity");
+
+
 
         mAuth = FirebaseAuth.getInstance();
         currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
@@ -71,6 +75,11 @@ public class ViewProductActivity extends AppCompatActivity {
 
         shoppingCartButton = findViewById(R.id.shoppingCartButton);
         shoppingCartButton.setOnClickListener(view -> sendUserToShoppingCart());
+
+        //Setting value if item exists in cart
+        if (productQuantity != null){
+            adjustQuantityButton.setNumber(productQuantity);
+        }
 
         fetchProductDetail();
     }
@@ -126,6 +135,8 @@ public class ViewProductActivity extends AppCompatActivity {
         SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm:ss a");
         saveCurrentTime = currentTime.format(callForDate.getTime());
 
+        String quantity = adjustQuantityButton.getNumber();
+
         DatabaseReference cartListRef = FirebaseDatabase
                 .getInstance()
                 .getReference()
@@ -136,7 +147,7 @@ public class ViewProductActivity extends AppCompatActivity {
         cartMap.put("uid", currentUserId);
         cartMap.put("productName", viewProductName.getText().toString());
         cartMap.put("sellingPrice", viewProductSellingPrice.getText().toString());
-        cartMap.put("quantity", adjustQuantityButton.getNumber());
+        cartMap.put("quantity", quantity);
         cartMap.put("date", saveCurrentDate);
         cartMap.put("time", saveCurrentTime);
         cartMap.put("discount", "");

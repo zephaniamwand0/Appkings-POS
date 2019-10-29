@@ -33,4 +33,6 @@
     <string name="ksh">KSH:</string>
     <string name="empty_cart">Empty cart</string>
     <string name="checkout_and_generate_receipt">Checkout and Generate receipt</string>
+    <string name="home">HOME</string>
+    <string name="path_to_storage_location">Path to storage location</string>
 </resources>

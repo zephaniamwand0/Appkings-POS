@@ -6,12 +6,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.appkings.co.ke.Cart.CartActivity;
 import com.appkings.co.ke.Cart.CartModelClass;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +32,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.GrayColor;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -42,9 +50,12 @@ public class GenerateReceiptActivity extends AppCompatActivity {
     String uid;
 
     private AppCompatButton buttonGenerateReceipt;
-    String ovrlPrice;
+    private AppCompatButton buttonHome;
+    private TextView viewResult;
+
     private FirebaseAuth mAuth;
 
+    private int overallTotalPrice = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +65,11 @@ public class GenerateReceiptActivity extends AppCompatActivity {
         buttonGenerateReceipt = findViewById(R.id.buttonGenerateReceipt);
         buttonGenerateReceipt.setOnClickListener(view -> generateReceipt());
 
+        viewResult = findViewById(R.id.viewResult);
+        buttonHome = findViewById(R.id.buttonHome);
+        buttonHome.setOnClickListener(view -> sendUserToMainActivity());
+
         uid = getIntent().getStringExtra("uid");
-        ovrlPrice = getIntent().getStringExtra("ovrlPrice");
 
         mAuth = FirebaseAuth.getInstance();
         currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
@@ -109,13 +123,11 @@ public class GenerateReceiptActivity extends AppCompatActivity {
                         //Instance of pdf writer
                         PdfWriter.getInstance(receipt, new FileOutputStream(receiptFilePath));
 
-
                         //Open document to write
                         receipt.open();
 
-                        PdfPTable table = new PdfPTable(4);
-
                         receipt.add(title());
+                        PdfPTable table = new PdfPTable(4);
 
                         // header row:
                         table.addCell("Item Name");
@@ -137,6 +149,8 @@ public class GenerateReceiptActivity extends AppCompatActivity {
                             int productQuantity = Integer.parseInt(temp3);
                             int product = productPrice * productQuantity;
                             String temp4 = Integer.toString(product);
+
+                            overallTotalPrice += product;
 
                             if (temp1.equalsIgnoreCase("")) {
                                 temp1 = "*"; // this fills the cell with * if the String is empty otherwise cell won't be created
@@ -160,21 +174,28 @@ public class GenerateReceiptActivity extends AppCompatActivity {
 
                             table.setKeepTogether(true);
                             receipt.add(table);
-
-                            Paragraph total = new Paragraph("Total Amount = " + ovrlPrice);
-                            total.setAlignment(Element.ALIGN_CENTER);
-                            receipt.add(total);
                         }
 
+                        SharedPreferences spp = getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
+                        int myIntValue = spp.getInt("your_int_key", -1);
 
+                        Paragraph total = new Paragraph("Total Amount = " + myIntValue);
+                        total.setAlignment(Element.ALIGN_CENTER);
+                        receipt.add(total);
 
                         //Close receipt
                         receipt.close();
 
-                        Snackbar snackBar = Snackbar.make(findViewById(android.R.id.content),
-                                "Receipt generated and is saved to: \n"
-                                        + receiptFilePath, Snackbar.LENGTH_INDEFINITE);
-                        snackBar.show();
+                        String path = receiptFilePath.replace(Environment
+                                .getExternalStorageDirectory() + "/", "");
+
+                        String st = "Receipt generated and is saved to: \n"
+                                + path;
+
+                        viewResult.setText(st);
+                        viewResult.setVisibility(View.VISIBLE);
+                        buttonGenerateReceipt.setEnabled(false);
+                        buttonGenerateReceipt.setBackgroundColor(Color.GRAY);
 
                     } catch (Exception e) {
                         //For error on generating
@@ -193,6 +214,25 @@ public class GenerateReceiptActivity extends AppCompatActivity {
             }
         });
 
+        cartListRef.child(currentUserId)
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(GenerateReceiptActivity.this,
+                                "Checkout successful",
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        String e = Objects.requireNonNull(task.getException()).toString();
+                        Toast.makeText(this, "Failed to checkout: "
+                                + e, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void sendUserToMainActivity() {
+        Intent mainActivityIntent = new Intent(this, MainActivity.class);
+        finish();
+        startActivity(mainActivityIntent);
     }
 
     public static Paragraph title() {
@@ -219,6 +259,14 @@ public class GenerateReceiptActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent cartActivityIntent = new Intent(this, CartActivity.class);
+        finish();
+        startActivity(cartActivityIntent);
     }
 
 }

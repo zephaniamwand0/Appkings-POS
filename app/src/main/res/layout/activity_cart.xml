@@ -35,7 +35,6 @@
         android:contentDescription="@string/empty_cart" />
 
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cartItemsList"
         android:layout_width="match_parent"

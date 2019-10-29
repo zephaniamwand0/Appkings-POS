@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -152,6 +154,11 @@ public class CartActivity extends AppCompatActivity {
                         final  String overallPrice = "Total Amount: " + overallTotalPrice;
                         textViewTotalPrice.setText(overallPrice);
 
+                        SharedPreferences sp = getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putInt("your_int_key", overallTotalPrice);
+                        editor.commit();
+
                         String quantity = "Quantity: " + model.getQuantity();
                         String name = "Item: \n " + model.getProductName();
                         String price = "Price = Ksh." + model.getSellingPrice();
@@ -182,6 +189,7 @@ public class CartActivity extends AppCompatActivity {
                                             ViewProductActivity.class);
                                     viewProductIntent
                                             .putExtra("productId", model.getProductId());
+                                    viewProductIntent.putExtra("productQuantity", model.getQuantity());
                                     startActivity(viewProductIntent);
                                 } else if (i == 1) {
 
@@ -222,6 +230,7 @@ public class CartActivity extends AppCompatActivity {
     private void sendUserToGenerateReceipt() {
         Intent generateReceiptIntent = new Intent(this, GenerateReceiptActivity.class);
         generateReceiptIntent.putExtra("uid", currentUserId);
+        finish();
         startActivity(generateReceiptIntent);
     }
 }
