@@ -1,4 +1,4 @@
-package com.appkings.co.ke;
+package com.smartwareafrica.pos;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -18,8 +18,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.appkings.co.ke.Cart.CartActivity;
-import com.appkings.co.ke.Cart.CartModelClass;
+import com.smartwareafrica.pos.Cart.CartActivity;
+import com.smartwareafrica.pos.Cart.CartModelClass;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +32,6 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.GrayColor;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 

@@ -1,4 +1,4 @@
-package com.appkings.co.ke.Cart;
+package com.smartwareafrica.pos.Cart;
 
 public class CartModelClass {
 

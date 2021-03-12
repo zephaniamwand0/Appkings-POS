@@ -1,4 +1,4 @@
-package com.appkings.co.ke.Products;
+package com.smartwareafrica.pos.Products;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,9 +10,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.appkings.co.ke.Cart.CartActivity;
-import com.appkings.co.ke.MainActivity;
-import com.appkings.co.ke.R;
+import com.smartwareafrica.pos.Cart.CartActivity;
+import com.smartwareafrica.pos.MainActivity;
+import com.smartwareafrica.pos.R;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;

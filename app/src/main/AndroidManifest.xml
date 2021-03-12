@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.appkings.co.ke">
+    package="com.smartwareafrica.pos">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".GenerateReceiptActivity"/>
-        <activity android:name=".Cart.CartActivity" />
-        <activity android:name=".Products.ViewProductActivity" />
-        <activity android:name=".Products.AddProductsActivity" />
-        <activity android:name=".Users.ResetPasswordActivity" />
-        <activity android:name=".Users.LoginActivity" />
-        <activity android:name=".Users.RegisterActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name="com.smartwareafrica.pos.GenerateReceiptActivity"/>
+        <activity android:name="com.smartwareafrica.pos.Cart.CartActivity" />
+        <activity android:name="com.smartwareafrica.pos.Products.ViewProductActivity" />
+        <activity android:name="com.smartwareafrica.pos.Products.AddProductsActivity" />
+        <activity android:name="com.smartwareafrica.pos.Users.ResetPasswordActivity" />
+        <activity android:name="com.smartwareafrica.pos.Users.LoginActivity" />
+        <activity android:name="com.smartwareafrica.pos.Users.RegisterActivity" />
+        <activity android:name="com.smartwareafrica.pos.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

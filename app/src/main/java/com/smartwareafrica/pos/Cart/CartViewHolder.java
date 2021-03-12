@@ -1,14 +1,13 @@
-package com.appkings.co.ke.Cart;
+package com.smartwareafrica.pos.Cart;
 
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.appkings.co.ke.Interface.ItemClickListener;
-import com.appkings.co.ke.R;
+import com.smartwareafrica.pos.Interface.ItemClickListener;
+import com.smartwareafrica.pos.R;
 
 public class CartViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     public TextView cartProductName;

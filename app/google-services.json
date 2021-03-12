@@ -1,42 +1,41 @@
 {
   "project_info": {
-    "project_number": "582714640239",
-    "firebase_url": "https://appkings-pos.firebaseio.com",
-    "project_id": "appkings-pos",
-    "storage_bucket": "appkings-pos.appspot.com"
+    "project_number": "328855015364",
+    "project_id": "smartware-africa-pos",
+    "storage_bucket": "smartware-africa-pos.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:582714640239:android:d75db57bedc2f8461aca9a",
+        "mobilesdk_app_id": "1:328855015364:android:03a81de306a51e1ed79e91",
         "android_client_info": {
-          "package_name": "com.appkings.co.ke"
+          "package_name": "com.smartwareafrica.pos"
         }
       },
       "oauth_client": [
         {
-          "client_id": "582714640239-l4p5clnsoa0ep0h79og5m3lr30dp4rf0.apps.googleusercontent.com",
+          "client_id": "328855015364-c7tiarp429onfdpurl6ie5q470ieadkh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.appkings.co.ke",
-            "certificate_hash": "0df95b8e70d9bbc9e4c0c786267c0fc5b2de04fe"
+            "package_name": "com.smartwareafrica.pos",
+            "certificate_hash": "be7235e6894da28d0bb301a6aac2d63b43b0b654"
           }
         },
         {
-          "client_id": "582714640239-f25c9nsp4m5g5vgn263htg4cbc09c1v2.apps.googleusercontent.com",
+          "client_id": "328855015364-20ou8o3noun3mk2m3hvtsqtdiar443lt.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDbRhNOjxwfnpylaWgQxn7N_EfOhAou1vo"
+          "current_key": "AIzaSyAhEoiypkAkWYnUbMN6U0pzbXdsSFsFU78"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "582714640239-f25c9nsp4m5g5vgn263htg4cbc09c1v2.apps.googleusercontent.com",
+              "client_id": "328855015364-20ou8o3noun3mk2m3hvtsqtdiar443lt.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

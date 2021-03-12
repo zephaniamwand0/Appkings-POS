@@ -1,4 +1,4 @@
-package com.appkings.co.ke;
+package com.smartwareafrica.pos;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.appkings.co.ke", appContext.getPackageName());
+        assertEquals("com.appkings.ke", appContext.getPackageName());
     }
 }

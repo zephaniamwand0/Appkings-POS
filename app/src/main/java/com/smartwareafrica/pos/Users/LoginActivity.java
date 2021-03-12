@@ -1,4 +1,4 @@
-package com.appkings.co.ke.Users;
+package com.smartwareafrica.pos.Users;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,8 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.appkings.co.ke.MainActivity;
-import com.appkings.co.ke.R;
+import com.smartwareafrica.pos.MainActivity;
+import com.smartwareafrica.pos.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

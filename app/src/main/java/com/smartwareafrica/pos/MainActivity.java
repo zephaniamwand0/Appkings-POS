@@ -1,4 +1,4 @@
-package com.appkings.co.ke;
+package com.smartwareafrica.pos;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,11 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.appkings.co.ke.Cart.CartActivity;
-import com.appkings.co.ke.Products.AddProductsActivity;
-import com.appkings.co.ke.Products.ProductsModelClass;
-import com.appkings.co.ke.Products.ViewProductActivity;
-import com.appkings.co.ke.Users.LoginActivity;
+import com.smartwareafrica.pos.Cart.CartActivity;
+import com.smartwareafrica.pos.Products.AddProductsActivity;
+import com.smartwareafrica.pos.Products.ProductsModelClass;
+import com.smartwareafrica.pos.Products.ViewProductActivity;
+import com.smartwareafrica.pos.Users.LoginActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

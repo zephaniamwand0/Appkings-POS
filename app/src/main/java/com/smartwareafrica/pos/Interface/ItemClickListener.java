@@ -1,4 +1,4 @@
-package com.appkings.co.ke.Interface;
+package com.smartwareafrica.pos.Interface;
 
 import android.view.View;
 

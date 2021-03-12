@@ -1,4 +1,4 @@
-package com.appkings.co.ke;
+package com.smartwareafrica.pos;
 
 import org.junit.Test;
 

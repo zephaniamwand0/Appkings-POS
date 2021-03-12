@@ -1,4 +1,4 @@
-package com.appkings.co.ke.Products;
+package com.smartwareafrica.pos.Products;
 
 public class ProductsModelClass {
 
