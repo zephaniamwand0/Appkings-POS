@@ -1,6 +1,7 @@
 package com.smartwareafrica.pos.Cart;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -17,19 +18,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.smartwareafrica.pos.GenerateReceiptActivity;
 import com.smartwareafrica.pos.Products.ViewProductActivity;
 import com.smartwareafrica.pos.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
@@ -70,38 +71,33 @@ public class CartActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        final DatabaseReference cartListRef = FirebaseDatabase
+        final CollectionReference cartListRef = FirebaseFirestore
                 .getInstance()
-                .getReference()
-                .child("Shopping Cart List");
-        FirebaseRecyclerOptions<CartModelClass> options = new
-                FirebaseRecyclerOptions.Builder<CartModelClass>()
-                .setQuery(cartListRef.child(currentUserId), CartModelClass.class)
+                .collection("cart");
+
+        Query query = cartListRef
+                .orderBy(currentUserId, Query.Direction.ASCENDING);
+
+        FirestoreRecyclerOptions<CartModelClass> options = new
+                FirestoreRecyclerOptions.Builder<CartModelClass>()
+                .setQuery(query, CartModelClass.class)
                 .build();
 
         //check if rv is empty
-        cartListRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        cartListRef
+                .document(currentUserId)
+                .collection("orderItems")
+                .addSnapshotListener((value, error) -> {
 
-                if (!dataSnapshot.exists()) {
-                    buttonConfirmPurchase.setVisibility(View.GONE);
-                    textViewTotalPrice.setVisibility(View.GONE);
-                    imageEmptyCart.setVisibility(View.VISIBLE);
-                }
-            }
+                    if (value.isEmpty()) {
+                        buttonConfirmPurchase.setVisibility(View.GONE);
+                        textViewTotalPrice.setVisibility(View.GONE);
+                        imageEmptyCart.setVisibility(View.VISIBLE);
+                    }
+                });
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                Toast.makeText(CartActivity.this, "An Error occurred: "
-                        + databaseError, Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        FirebaseRecyclerAdapter<CartModelClass, CartViewHolder> adapter = new
-                FirebaseRecyclerAdapter<CartModelClass, CartViewHolder>(options) {
+        FirestoreRecyclerAdapter<CartModelClass, CartViewHolder> adapter = new
+                FirestoreRecyclerAdapter<CartModelClass, CartViewHolder>(options) {
                     @SuppressLint("SetTextI18n")
                     @Override
                     protected void onBindViewHolder
@@ -109,16 +105,17 @@ public class CartActivity extends AppCompatActivity {
                              @NonNull CartModelClass model) {
 
                         //Calculate totals
-                        int singleProductTotalPrice = ((Integer.valueOf(model.getSellingPrice())))
-                                * Integer.valueOf(model.getQuantity());
+                        int singleProductTotalPrice = ((Integer.parseInt(model.getSellingPrice())))
+                                * Integer.parseInt(model.getQuantity());
                         overallTotalPrice = overallTotalPrice + singleProductTotalPrice;
-                        final  String overallPrice = "Total Amount: " + overallTotalPrice;
+                        final String overallPrice = "Total Amount: " + overallTotalPrice;
                         textViewTotalPrice.setText(overallPrice);
 
-                        SharedPreferences sp = getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
+                        SharedPreferences sp = getSharedPreferences("your_prefs",
+                                Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putInt("your_int_key", overallTotalPrice);
-                        editor.commit();
+                        editor.apply();
 
                         String quantity = "Quantity: " + model.getQuantity();
                         String name = "Item: \n " + model.getProductName();
@@ -150,20 +147,21 @@ public class CartActivity extends AppCompatActivity {
                                             ViewProductActivity.class);
                                     viewProductIntent
                                             .putExtra("productId", model.getProductId());
-                                    viewProductIntent.putExtra("productQuantity", model.getQuantity());
+                                    viewProductIntent
+                                            .putExtra("productQuantity", model.getQuantity());
                                     startActivity(viewProductIntent);
                                 } else if (i == 1) {
 
-                                    cartListRef.child(currentUserId)
-                                            .child(model.getProductId())
-                                            .removeValue()
-                                            .addOnCompleteListener(task -> {
-                                                if (task.isSuccessful()) {
-                                                    Toast.makeText(CartActivity.this,
-                                                            "Item removed Successfully",
-                                                            Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+//                                    cartListRef.document(currentUserId)
+//                                            .collection(model.getProductId())
+//                                            .removeValue()
+//                                            .addOnCompleteListener(task -> {
+//                                                if (task.isSuccessful()) {
+//                                                    Toast.makeText(CartActivity.this,
+//                                                            "Item removed Successfully",
+//                                                            Toast.LENGTH_SHORT).show();
+//                                                }
+//                                            });
 
                                     Intent restartActivityIntent = getIntent();
                                     finish();
@@ -188,6 +186,7 @@ public class CartActivity extends AppCompatActivity {
         cartItemsList.setAdapter(adapter);
         adapter.startListening();
     }
+
     private void sendUserToGenerateReceipt() {
         Intent generateReceiptIntent = new Intent(this, GenerateReceiptActivity.class);
         generateReceiptIntent.putExtra("uid", currentUserId);

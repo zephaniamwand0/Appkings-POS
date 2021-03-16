@@ -7,12 +7,12 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.smartwareafrica.pos.R;
 import com.smartwareafrica.pos.Users.LoginActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class AddProductsActivity extends AppCompatActivity {
 
     String currentUserId;
     private FirebaseAuth mAuth;
-    private DatabaseReference productsRef;
+    private CollectionReference productsRef;
 
 
     @Override
@@ -37,7 +37,7 @@ public class AddProductsActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        productsRef = FirebaseDatabase.getInstance().getReference().child("Products");
+        productsRef = FirebaseFirestore.getInstance().collection("Products");
 
         if (mAuth.getCurrentUser() == null) {
             sendUserToLoginActivity();
@@ -52,8 +52,7 @@ public class AddProductsActivity extends AppCompatActivity {
     }
 
     private void addProduct() {
-        final String uniqueKey = productsRef.push().getKey();
-
+     //   final String uniqueKey = productsRef.getId();
 
         String productName = editTextProductName.getText().toString().trim();
         String buyingPrice = editTextBuyingPrice.getText().toString().trim();
@@ -75,7 +74,7 @@ public class AddProductsActivity extends AppCompatActivity {
             productsMap.put("sellingPrice", sellingPrice);
             productsMap.put("productDescription", productDescription);
             productsMap.put("userId", currentUserId);
-            productsRef.child(uniqueKey).updateChildren(productsMap)
+            productsRef.add(productsMap)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             //Restart Activity

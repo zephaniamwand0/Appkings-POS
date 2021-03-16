@@ -18,15 +18,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.smartwareafrica.pos.Cart.CartActivity;
 import com.smartwareafrica.pos.Cart.CartModelClass;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
@@ -77,144 +80,146 @@ public class GenerateReceiptActivity extends AppCompatActivity {
 
     private void generateReceipt() {
 
-        final DatabaseReference cartListRef = FirebaseDatabase
+        final CollectionReference cartListRef = FirebaseFirestore
                 .getInstance()
-                .getReference()
-                .child("Shopping Cart List");
+                .collection("Shopping Cart List");
 
         //check if rv is empty
-        cartListRef.child(uid).addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
+        cartListRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
                 List<CartModelClass> list = new ArrayList<>();
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot dataValues : task.getResult()) {
+                        CartModelClass cartModelClass = dataValues.toObject(CartModelClass.class);
+                        list.add(cartModelClass);
 
-                for (DataSnapshot dataValues : dataSnapshot.getChildren()) {
-                    CartModelClass cartModelClass = dataValues.getValue(CartModelClass.class);
-                    list.add(cartModelClass);
 
-
-                    //Runtime permissions
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                        //OS >= Marshmallow
-                        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                                PackageManager.PERMISSION_DENIED) {
-                            //Permission not granted: Request for it
-                            String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                            requestPermissions(permissions, STORAGE_CODE);
-                        }
-                    }
-
-                    //Create object for document class
-                    Document receipt = new Document();
-                    //File name
-                    String receiptName = "Receipt_"
-                            + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-                            .format(System.currentTimeMillis());
-                    //File path
-                    String receiptFilePath = Environment
-                            .getExternalStorageDirectory()
-                            + "/download/"
-                            + receiptName
-                            + ".pdf";
-
-                    try {
-                        //Instance of pdf writer
-                        PdfWriter.getInstance(receipt, new FileOutputStream(receiptFilePath));
-
-                        //Open document to write
-                        receipt.open();
-
-                        receipt.add(title());
-                        PdfPTable table = new PdfPTable(4);
-
-                        // header row:
-                        table.addCell("Item Name");
-                        table.addCell("Price");
-                        table.addCell("Quantity");
-                        table.addCell("Total");
-
-                        table.setHeaderRows(2);
-                        table.setFooterRows(1);
-
-                        // Here's how you adding the values
-                        for (int i = 0; i < list.size(); i++) {
-
-                            String temp1 = list.get(i).getProductName();
-                            String temp2 = list.get(i).getSellingPrice();
-                            String temp3 = list.get(i).getQuantity();
-                            String price = temp2;
-                            int productPrice = Integer.parseInt(price);
-                            int productQuantity = Integer.parseInt(temp3);
-                            int product = productPrice * productQuantity;
-                            String temp4 = Integer.toString(product);
-
-                            overallTotalPrice += product;
-
-                            if (temp1.equalsIgnoreCase("")) {
-                                temp1 = "*"; // this fills the cell with * if the String is empty otherwise cell won't be created
+                        //Runtime permissions
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                            //OS >= Marshmallow
+                            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                                    PackageManager.PERMISSION_DENIED) {
+                                //Permission not granted: Request for it
+                                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                                requestPermissions(permissions, STORAGE_CODE);
                             }
-
-                            if (temp2.equalsIgnoreCase("")) {
-                                temp2 = "*"; // this fills the cell with *
-                            }
-
-                            if (temp3.equalsIgnoreCase("")) {
-                                temp3 = "*"; // this fills the cell with *
-                            }
-                            if (temp4.equalsIgnoreCase("")) {
-                                temp4 = "*"; // this fills the cell with *
-                            }
-
-                            table.addCell(temp1); // rows for first column
-                            table.addCell(temp2); // rows for seconds column
-                            table.addCell(temp3); // rows for third column
-                            table.addCell(temp4); // rows for fourth column
-
-                            table.setKeepTogether(true);
-                            receipt.add(table);
                         }
 
-                        SharedPreferences spp = getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
-                        int myIntValue = spp.getInt("your_int_key", -1);
+                        //Create object for document class
+                        Document receipt = new Document();
+                        //File name
+                        String receiptName = "Receipt_"
+                                + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                                .format(System.currentTimeMillis());
+                        //File path
+                        String receiptFilePath = Environment
+                                .getExternalStorageDirectory()
+                                + "/download/"
+                                + receiptName
+                                + ".pdf";
 
-                        Paragraph total = new Paragraph("Total Amount = " + myIntValue);
-                        total.setAlignment(Element.ALIGN_CENTER);
-                        receipt.add(total);
+                        try {
+                            //Instance of pdf writer
+                            PdfWriter.getInstance(receipt, new FileOutputStream(receiptFilePath));
 
-                        //Close receipt
-                        receipt.close();
+                            //Open document to write
+                            receipt.open();
 
-                        String path = receiptFilePath.replace(Environment
-                                .getExternalStorageDirectory() + "/", "");
+                            receipt.add(title());
+                            PdfPTable table = new PdfPTable(4);
 
-                        String st = "Receipt generated and is saved to: \n"
-                                + path;
+                            // header row:
+                            table.addCell("Item Name");
+                            table.addCell("Price");
+                            table.addCell("Quantity");
+                            table.addCell("Total");
 
-                        viewResult.setText(st);
-                        viewResult.setVisibility(View.VISIBLE);
-                        buttonGenerateReceipt.setEnabled(false);
-                        buttonGenerateReceipt.setBackgroundColor(Color.GRAY);
+                            table.setHeaderRows(2);
+                            table.setFooterRows(1);
 
-                    } catch (Exception e) {
-                        //For error on generating
-                        Snackbar snackBar = Snackbar.make(findViewById(android.R.id.content),
-                                "ERROR: " + e, Snackbar.LENGTH_INDEFINITE);
-                        snackBar.show();
+                            // Here's how you adding the values
+                            for (int i = 0; i < list.size(); i++) {
+
+                                String temp1 = list.get(i).getProductName();
+                                String temp2 = list.get(i).getSellingPrice();
+                                String temp3 = list.get(i).getQuantity();
+                                String price = temp2;
+                                int productPrice = Integer.parseInt(price);
+                                int productQuantity = Integer.parseInt(temp3);
+                                int product = productPrice * productQuantity;
+                                String temp4 = Integer.toString(product);
+
+                                overallTotalPrice += product;
+
+                                if (temp1.equalsIgnoreCase("")) {
+                                    temp1 = "*"; // this fills the cell with * if the String is empty otherwise cell won't be created
+                                }
+
+                                if (temp2.equalsIgnoreCase("")) {
+                                    temp2 = "*"; // this fills the cell with *
+                                }
+
+                                if (temp3.equalsIgnoreCase("")) {
+                                    temp3 = "*"; // this fills the cell with *
+                                }
+                                if (temp4.equalsIgnoreCase("")) {
+                                    temp4 = "*"; // this fills the cell with *
+                                }
+
+                                table.addCell(temp1); // rows for first column
+                                table.addCell(temp2); // rows for seconds column
+                                table.addCell(temp3); // rows for third column
+                                table.addCell(temp4); // rows for fourth column
+
+                                table.setKeepTogether(true);
+                                receipt.add(table);
+                            }
+
+                            SharedPreferences spp = getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
+                            int myIntValue = spp.getInt("your_int_key", -1);
+
+                            Paragraph total = new Paragraph("Total Amount = " + myIntValue);
+                            total.setAlignment(Element.ALIGN_CENTER);
+                            receipt.add(total);
+
+                            //Close receipt
+                            receipt.close();
+
+                            String path = receiptFilePath.replace(Environment
+                                    .getExternalStorageDirectory() + "/", "");
+
+                            String st = "Receipt generated and is saved to: \n"
+                                    + path;
+
+                            viewResult.setText(st);
+                            viewResult.setVisibility(View.VISIBLE);
+                            buttonGenerateReceipt.setEnabled(false);
+                            buttonGenerateReceipt.setBackgroundColor(Color.GRAY);
+
+                        } catch (Exception e) {
+                            //For error on generating
+                            Snackbar snackBar = Snackbar.make(findViewById(android.R.id.content),
+                                    "ERROR: " + e, Snackbar.LENGTH_INDEFINITE);
+                            snackBar.show();
+                        }
                     }
+                } else {
+                    Toast.makeText(GenerateReceiptActivity.this, "Err", Toast.LENGTH_SHORT).show();
                 }
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Snackbar snackBar = Snackbar.make(findViewById(android.R.id.content),
-                        "An error occurred: " + databaseError, Snackbar.LENGTH_LONG);
-                snackBar.show();
-            }
+
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Snackbar snackBar = Snackbar.make(findViewById(android.R.id.content),
+//                        "An error occurred: " + databaseError, Snackbar.LENGTH_LONG);
+//                snackBar.show();
+//            }
         });
 
-        cartListRef.child(currentUserId)
-                .removeValue()
+        cartListRef.document(currentUserId).delete()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(GenerateReceiptActivity.this,

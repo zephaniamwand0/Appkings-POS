@@ -1,15 +1,18 @@
 package com.smartwareafrica.pos.Products;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.smartwareafrica.pos.Cart.CartActivity;
 import com.smartwareafrica.pos.MainActivity;
 import com.smartwareafrica.pos.R;
@@ -17,11 +20,6 @@ import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -42,7 +40,7 @@ public class ViewProductActivity extends AppCompatActivity {
     //For FireBase
     String currentUserId;
     private FirebaseAuth mAuth;
-    private DatabaseReference productsRef;
+    private DocumentReference productsRef;
 
     private ImageButton shoppingCartButton;
 
@@ -56,14 +54,12 @@ public class ViewProductActivity extends AppCompatActivity {
         productQuantity = getIntent().getStringExtra("productQuantity");
 
 
-
         mAuth = FirebaseAuth.getInstance();
         currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        productsRef = FirebaseDatabase
+        productsRef = FirebaseFirestore
                 .getInstance()
-                .getReference()
-                .child("Products")
-                .child(productId);
+                .collection("Products")
+                .document(productId);
 
         viewProductName = findViewById(R.id.viewProductName);
         viewProductDescription = findViewById(R.id.viewProductDescription);
@@ -77,7 +73,7 @@ public class ViewProductActivity extends AppCompatActivity {
         shoppingCartButton.setOnClickListener(view -> sendUserToShoppingCart());
 
         //Setting value if item exists in cart
-        if (productQuantity != null){
+        if (productQuantity != null) {
             adjustQuantityButton.setNumber(productQuantity);
         }
 
@@ -85,40 +81,30 @@ public class ViewProductActivity extends AppCompatActivity {
     }
 
     private void fetchProductDetail() {
-        productsRef.addValueEventListener(new ValueEventListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
+        productsRef.addSnapshotListener((value, error) -> {
 
-                    String productName = Objects
-                            .requireNonNull(dataSnapshot.child("productName")
-                                    .getValue()).toString();
-                    String productDescription = Objects
-                            .requireNonNull(dataSnapshot.child("productDescription")
-                                    .getValue()).toString();
-                    String sellingPrice = Objects
-                            .requireNonNull(dataSnapshot.child("sellingPrice")
-                                    .getValue()).toString();
+            if (value.exists()) {
 
-                    viewProductName.setText(productName);
-                    viewProductDescription.setText(productDescription);
-                    viewProductSellingPrice.setText(sellingPrice);
+                String productName = Objects
+                        .requireNonNull(value.get("productName").toString());
+                String productDescription = Objects
+                        .requireNonNull(value.get("productDescription")
+                                .toString());
+                String sellingPrice = Objects
+                        .requireNonNull(value.get("sellingPrice").toString());
 
-                } else {
-                    Snackbar snackBar = Snackbar
-                            .make(findViewById(android.R.id.content),
-                                    "Error",
-                                    Snackbar.LENGTH_INDEFINITE);
-                    snackBar.show();
-                }
+                viewProductName.setText(productName);
+                viewProductDescription.setText(productDescription);
+                viewProductSellingPrice.setText(sellingPrice);
 
+            } else {
+                Snackbar snackBar = Snackbar
+                        .make(findViewById(android.R.id.content),
+                                "Error",
+                                Snackbar.LENGTH_INDEFINITE);
+                snackBar.show();
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
     }
 
@@ -137,10 +123,10 @@ public class ViewProductActivity extends AppCompatActivity {
 
         String quantity = adjustQuantityButton.getNumber();
 
-        DatabaseReference cartListRef = FirebaseDatabase
+        CollectionReference cartListRef = FirebaseFirestore
                 .getInstance()
-                .getReference()
-                .child("Shopping Cart List");
+                .collection("cart")
+                .document(currentUserId).collection("orderItems");
 
         final HashMap<String, Object> cartMap = new HashMap<>();
         cartMap.put("productId", productId);
@@ -153,9 +139,8 @@ public class ViewProductActivity extends AppCompatActivity {
         cartMap.put("discount", "");
 
         cartListRef
-                .child(currentUserId)
-                .child(productId)
-                .updateChildren(cartMap)
+                .document(productId)
+                .set(cartMap)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
 
@@ -168,6 +153,7 @@ public class ViewProductActivity extends AppCompatActivity {
                                 .make(findViewById(android.R.id.content),
                                         "Error: " + task.getException(),
                                         Snackbar.LENGTH_LONG);
+                        Log.d("err", String.valueOf(task.getException()));
                         snackBar.show();
                     }
                 });

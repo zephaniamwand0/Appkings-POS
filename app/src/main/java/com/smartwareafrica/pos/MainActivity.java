@@ -3,6 +3,7 @@ package com.smartwareafrica.pos;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -13,24 +14,24 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.smartwareafrica.pos.Cart.CartActivity;
 import com.smartwareafrica.pos.Products.AddProductsActivity;
 import com.smartwareafrica.pos.Products.ProductsModelClass;
 import com.smartwareafrica.pos.Products.ViewProductActivity;
 import com.smartwareafrica.pos.Users.LoginActivity;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private DatabaseReference productsReference;
+    private CollectionReference productsReference;
     String currentUserID;
 
     private FloatingActionButton addProductsFab;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
             mAuth = FirebaseAuth.getInstance();
             currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-            productsReference = FirebaseDatabase.getInstance().getReference().child("Products");
+            productsReference = FirebaseFirestore.getInstance().collection("Products");
 
             shoppingCartButton = findViewById(R.id.shoppingCartButton);
             shoppingCartButton.setOnClickListener(view -> sendUserToShoppingCart());
@@ -75,19 +76,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayAllProductsLayout() {
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        productsRecyclerView.setLayoutManager(gridLayoutManager);
-        gridLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        productsRecyclerView.setLayoutManager(linearLayoutManager);
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
 
         //Query productsQuery = productsReference;
 
-        final FirebaseRecyclerOptions<ProductsModelClass> options = new
-                FirebaseRecyclerOptions.Builder<ProductsModelClass>()
+        final FirestoreRecyclerOptions<ProductsModelClass> options = new
+                FirestoreRecyclerOptions.Builder<ProductsModelClass>()
                 .setQuery(productsReference, ProductsModelClass.class)
                 .build();
 
-        FirebaseRecyclerAdapter<ProductsModelClass, ProductsViewHolder> fireBaseRecyclerAdapter =
-                new FirebaseRecyclerAdapter<ProductsModelClass, ProductsViewHolder>(options) {
+        FirestoreRecyclerAdapter<ProductsModelClass, ProductsViewHolder> fireBaseRecyclerAdapter =
+                new FirestoreRecyclerAdapter<ProductsModelClass, ProductsViewHolder>(options) {
                     @Override
                     protected void
                     onBindViewHolder(@NonNull ProductsViewHolder holder,
@@ -103,8 +104,9 @@ public class MainActivity extends AppCompatActivity {
                         holder.productSellingPrice.setText(singleProductPrice);
 
                         holder.itemView.setOnClickListener(view -> {
-                            final String productId = getRef(position).getKey();
-                            Intent productIntent = new Intent(MainActivity.this, ViewProductActivity.class);
+                            final String productId = getSnapshots().getSnapshot(position).getId();
+                            Intent productIntent = new Intent(MainActivity.this,
+                                    ViewProductActivity.class);
                             productIntent.putExtra("productId", productId);
                             startActivity(productIntent);
                         });
@@ -121,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
 
-        productsRecyclerView.setLayoutManager(gridLayoutManager);
+        productsRecyclerView.setLayoutManager(linearLayoutManager);
         productsRecyclerView.setAdapter(fireBaseRecyclerAdapter);
         fireBaseRecyclerAdapter.notifyDataSetChanged();
         fireBaseRecyclerAdapter.startListening();
@@ -131,9 +133,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static class ProductsViewHolder extends RecyclerView.ViewHolder {
-        private TextView productName;
-        private TextView productDescription;
-        private TextView productSellingPrice;
+        private final TextView productName;
+        private final TextView productDescription;
+        private final TextView productSellingPrice;
 
         private ProductsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         finish();
         startActivity(loginIntent);
     }
+
     private void sendUserToShoppingCart() {
         Intent cartActivityIntent = new Intent(this, CartActivity.class);
         startActivity(cartActivityIntent);

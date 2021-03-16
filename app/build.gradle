@@ -4,7 +4,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "com.appkings.ke"
+        applicationId "com.smartwareafrica.pos"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
@@ -46,9 +46,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:19.2.1'
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth:20.0.3'
-    implementation 'com.google.firebase:firebase-database:19.7.0'
-    implementation 'com.firebaseui:firebase-ui-database:6.0.2'
     implementation 'com.google.firebase:firebase-firestore:22.1.1'
+    // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:7.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

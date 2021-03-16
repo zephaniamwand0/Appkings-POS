@@ -9,7 +9,7 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
 
-    <GridLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
@@ -20,7 +20,7 @@
             android:id="@+id/productsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </GridLayout>
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
